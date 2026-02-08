@@ -1,1 +1,0 @@
-CWebStudioFirmware --port 3000 --dynamic_lib  release/Segfault-as-a-Service.so  --callback main_internal_server  --password mysupersecretpassword
