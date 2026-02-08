@@ -1,6 +1,12 @@
+// ===============================APP SANDBOX===============================
+// These its a app server sandbox, dont make any kind of includes here
 
 typedef void apprequest;
 typedef void appresponse;
+typedef int appbool;
+#define app_true 1
+#define app_false 0
+
 
 typedef struct appdeps{
     const apprequest *apprequest;
