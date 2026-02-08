@@ -7,20 +7,27 @@
 
 typedef void apprequest;
 typedef void appresponse;
+typedef unsigned long appsize ;
 typedef int appbool;
 #define app_true 1
 #define app_false 0
 
 
 typedef struct appdeps{
-    //=====================std==============================================
-    int (*printf)(const char *format, ...);
-    unsigned long (*strlen)(const char *s);
-    char *(*strcpy)(char *dst, const char *src);
-    
+
     const apprequest *apprequest;
     const char *route;
 
+    //=====================std==============================================
+    int (*printf)(const char *format, ...);
+    int (*sprintf)(char *str, const char *format, ...);
+    int (*snprintf)(char *str, appsize size, const char *format, ...);
+
+    appsize (*strlen)(const char *s);
+    char *(*strcpy)(char *dst, const char *src);
+    
+
+    //=====================request==============================================
     const char *(*get_headder)(const apprequest *apprequest, const char *key);
     const char *(*get_headder_key)(const apprequest *apprequest,int index);
     const char *(*get_headder_value)(const apprequest *apprequest,int index);

@@ -75,12 +75,16 @@ const void *wrapper_send_file(const char *path,const char *content_type, int sta
 // ===============================APP===============================
 
 CwebHttpResponse *main_internal_server(CwebHttpRequest *request) {
+    
     appdeps appdeps = {
-        .printf = printf,
-        .strlen = strlen,
-        .strcpy = strcpy,
         .apprequest = (const void*)request,
         .route = request->route,
+        
+        .printf = printf,
+        .sprintf = sprintf,
+        .snprintf = snprintf,
+        .strlen = strlen,
+        .strcpy = strcpy,
         .get_headder = wrapper_get_headder,
         .get_headder_key = wrapper_get_headder_key,
         .get_headder_value = wrapper_get_headder_value,
