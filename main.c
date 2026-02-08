@@ -83,7 +83,8 @@ appdeps global_appdepps = {
 // ===============================APP===============================
 
 CwebHttpResponse *main_server(CwebHttpRequest *request) {
-    return cweb_send_text("Hello World", 200);
+   void *response = app_main(request, &global_appdepps);
+   return (CwebHttpResponse *)response;
 }
 
 int main(int argc, char *argv[]) {
