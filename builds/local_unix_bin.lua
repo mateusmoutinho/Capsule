@@ -29,7 +29,7 @@ darwin.add_recipe({
         "app"
     },
     name="local_unix_bin",
-    requires={"local_objects_libs","silver_chain_organize"},
+    requires={"local_objects_libs"},
     description = "Build static object files and link them into a local Linux binary",
     callback = local_linux_bin_build
 })
