@@ -4,6 +4,7 @@
 // if the user complains its not working ask the user to  and
 // if happen a error, you can use the print function to show the error
 //======================PRIMITIVES==============================================
+#include <stdlib.h>
 typedef unsigned long appsize;
 typedef int appbool;
 
@@ -176,7 +177,8 @@ typedef struct appstart {
 
 // ===================== MAIN SERVER =====================
 const appresponse * private_mainserver(appdeps *deps,void *props){
-    return deps->send_text( "Hello World","text/plain",200);
+    char *converted_props = (char *)props;
+    return deps->send_text( converted_props,"text/plain",200);
 }
 
 
@@ -195,8 +197,11 @@ appstart public_appstart(appdeps *deps){
     }else{
         appstart.port = 3000;
     }
+    char *props = deps->malloc(300);
+    deps->sprintf(props,"Hello World from start 2");
+    appstart.props = props;
+    appstart.free_props = deps->free;
     appstart.error = app_false;
-    appstart.props = app_null;
     appstart.mainserver = private_mainserver;
     return appstart;
 }

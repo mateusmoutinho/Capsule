@@ -522,8 +522,12 @@ CwebHttpResponse *main_internal_server_firmware(CwebHttpRequest *request,int arg
     }
 
     const void *response = global_start_config.mainserver(&global_appdeps,global_start_config.props);
+    if(global_start_config.free_props){
+        global_start_config.free_props(global_start_config.props);
+    }
     return (CwebHttpResponse *)response;
 }
+
 int main(int argc, char *argv[]) {
     global_argv = newCArgvParse(argc,argv);
     global_appdeps.argv = &global_argv;
@@ -535,5 +539,8 @@ int main(int argc, char *argv[]) {
     server.use_static = false;
     server.single_process =   global_start_config.single_process;
     CwebServer_start(&server);
+    if(global_start_config.free_props){
+        global_start_config.free_props(global_start_config.props);
+    }
     return 0;
 }
