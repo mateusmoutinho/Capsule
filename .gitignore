@@ -7,3 +7,4 @@ libs
 .cache
 quickbuild.sh
 app
+start_firmware.sh
