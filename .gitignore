@@ -3,3 +3,5 @@ dependencies
 release/
 src/
 src/fdeclare.all.h
+libs
+.cache

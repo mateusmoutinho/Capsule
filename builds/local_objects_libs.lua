@@ -11,7 +11,6 @@ function create_objects_ar_libs()
         {command=compiler.." -c dependencies/UniversalGarbage.c -o libs/UniversalGarbage.o",out_path="libs/UniversalGarbage.o"},
         {command=compiler.." -c dependencies/cJSON.c -o libs/cJSON.o",out_path="libs/cJSON.o"},
         {command=compiler.." -c dependencies/UniversalSocket.c  -o libs/UniversalSocket.o",out_path="libs/UniversalSocket.o"},
-        {command=compiler.." -c dependencies/LuaCEmbed.c  -DLUA_CEMBED_MOCK_UNIVERSAL_GARBAGE_DEFINE -o libs/LuaCEmbed.o",out_path="libs/LuaCEmbed.o"},
         {command=compiler.." -c dependencies/CWebStudio.c  -DCWEB_MOCK_CJSON_DEFINE -DCWEB_MOCK_UNIVERSAL_GARBAGE_DEFINE -DCWEB_MOCK_UNIVERSAL_SOCKET_DEFINE  -DCWEB_MOCK_CTEXT_ENGINE_DEFINE -o libs/CWebStudio.o",out_path="libs/CWebStudio.o"},
         {command=compiler..[[ -c dependencies/doTheWorldOne.c -DDTW_MOCK_CJSON_DEFINE    -o libs/doTheWorld.o]],out_path="libs/doTheWorld.o"},
 
