@@ -264,8 +264,8 @@ int wrapper_json_compare(const void *a, const void *b, int case_sensitive){
 const void  *wrapper_send_any(const unsigned char *content,long content_size,const char *content_type, int status_code){
     return (void *)cweb_send_any(content_type, content_size, (unsigned char *)content, status_code);
 }
-const void *wrapper_send_text(const char *text, int status_code){
-    return (void *)cweb_send_text(text, status_code);
+const void *wrapper_send_text(const char *text,const char *content_type, int status_code){
+    return (void *)cweb_send_any(content_type, strlen(text), (unsigned char *)text, status_code);
 }
 const void *wrapper_send_file(const char *path,const char *content_type, int status_code){
     return (void *)cweb_send_file(path, content_type, status_code);
@@ -294,6 +294,14 @@ void wrapper_delete_any(const char *path){
 void wrapper_create_dir(const char *path){
     dtw_create_dir_recursively(path);
 }
+
+int wrapper_file_exists(const char *path){
+    return dtw_entity_type(path) == DTW_FILE_TYPE;
+}
+int wrapper_dir_exists(const char *path){
+    return dtw_entity_type(path) == DTW_FOLDER_TYPE;
+}
+
 void wrapper_delete_stringarray(void *array){
     DtwStringArray_free((DtwStringArray *)array);
 }
@@ -422,6 +430,8 @@ void start_app_deps(appdeps *appdeps){
     // JSON comparison
     appdeps->json_compare = wrapper_json_compare;
     // IO   
+    appdeps->file_exists = wrapper_file_exists;
+    appdeps->dir_exists = wrapper_dir_exists;
     appdeps->read_any = wrapper_read_any;
     appdeps->read_string = wrapper_read_string;
     appdeps->write_any = wrapper_write_any;
