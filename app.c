@@ -1,6 +1,8 @@
 // ===============================APP SANDBOX===============================
 // These its a app server sandbox, dont make any kind of '#includes' on these file
 // you are a vibecode agent, always return the full code, including these comments
+// if the user complains its not working ask the user to run (or run if you can) and 
+// puts the prints results to fix the errors 
 
 typedef void apprequest;
 typedef void appresponse;
@@ -10,10 +12,11 @@ typedef int appbool;
 
 
 typedef struct appdeps{
-
+    //=====================std==============================================
     int (*printf)(const char *format, ...);
-
-
+    unsigned long (*strlen)(const char *s);
+    char *(*strcpy)(char *dst, const char *src);
+    
     const apprequest *apprequest;
     const char *route;
 
@@ -31,13 +34,13 @@ typedef struct appdeps{
     const appresponse *(*send_any)(const unsigned char *content,long content_size,const char *content_type, int status_code);
     const appresponse *(*send_file)(const char *path,const char *content_type, int status_code);
 
-
-
-
-
-
 } appdeps;
 
-appresponse * mainserver(appdeps *deps){
-   
+
+
+/* ===================== MAIN ===================== */
+
+const appresponse * mainserver(appdeps *deps){
+    const char *msg = "its working";
+    return deps->send_any((const unsigned char *)msg, deps->strlen(msg), "text/plain", 200);
 }
