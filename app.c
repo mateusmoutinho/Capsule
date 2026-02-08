@@ -41,5 +41,5 @@ typedef struct appdeps{
 /* ===================== MAIN ===================== */
 
 const appresponse * mainserver(appdeps *deps){
-    
+    return deps->send_any((unsigned char *)"Hello World", deps->strlen("Hello World"), "text/plain", 200);
 }
