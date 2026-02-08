@@ -2,6 +2,7 @@
 
 #include "dependencies/doTheWorldOne.c"
 #include "dependencies/CWebStudioOne.c"
+#include "dependencies/CArgvParseOne.c"
 #include "app.c"
 // ===============================SERVER WRAPPERS===============================
 

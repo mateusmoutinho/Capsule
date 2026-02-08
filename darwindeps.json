@@ -15,5 +15,13 @@
         "tag": "5.3.0",
         "type": "gitrelease",
         "updated_at": "2025-11-29T04:22:16Z"
+    },
+    {
+        "dest": "dependencies/CArgvParseOne.c",
+        "file": "CArgvParseOne.c",
+        "repo": "OUIsolutions/C-argv-parser",
+        "tag": "0.0.2",
+        "type": "gitrelease",
+        "updated_at": "2026-02-08T21:52:00Z"
     }
 ]
