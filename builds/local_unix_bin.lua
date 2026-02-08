@@ -10,7 +10,7 @@ function local_linux_bin_build()
         compiler = "g++"
     end
    
-    local compilation = compiler.." "..build_props.cflags.." -o app src/main.c  libs/doTheWorld.o libs/CWebStudio.o libs/cJSON.o libs/UniversalGarbage.o libs/UniversalSocket.o libs/CTextEngine.o libs/CArgvParse.o  libs/LuaCEmbed.o -ldl"
+    local compilation = compiler.." "..build_props.cflags.." -o app main.c  libs/doTheWorld.o libs/CWebStudio.o libs/cJSON.o libs/UniversalGarbage.o libs/UniversalSocket.o libs/CTextEngine.o libs/CArgvParse.o -ldl"
 
     print("compilation: ", compilation)
     os.execute(compilation)
