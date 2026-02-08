@@ -9,6 +9,7 @@ typedef int appbool;
 
 #define app_true 1
 #define app_false 0
+#define app_null ((void *)0)
 
 
 //======================APP TYPES==============================================
