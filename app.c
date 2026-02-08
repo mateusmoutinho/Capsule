@@ -9,8 +9,13 @@ typedef int appbool;
 
 
 typedef struct appdeps{
+
+    int (*printf)(const char *format, ...);
+
+    
     const apprequest *apprequest;
     const char *route;
+
     const char *(*get_headder)(const apprequest *apprequest, const char *key);
     const char *(*get_headder_key)(const apprequest *apprequest,int index);
     const char *(*get_headder_value)(const apprequest *apprequest,int index);

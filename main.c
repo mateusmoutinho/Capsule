@@ -68,22 +68,26 @@ const void  *wrapper_send_any(const unsigned char *content,long content_size,con
 const void *wrapper_send_file(const char *path,const char *content_type, int status_code){
     return (void *)cweb_send_file(path, content_type, status_code);
 }
-appdeps global_appdepps = {
-    .get_headder = wrapper_get_headder,
-    .get_headder_key = wrapper_get_headder_key,
-    .get_headder_value = wrapper_get_headder_value,
-    .get_method = wrapper_get_method,
-    .get_query_param_key = wrapper_get_query_param_key,
-    .get_query_param_value = wrapper_get_query_param_value,
-    .read_body = wrapper_read_body,
-    .send_any = wrapper_send_any,
-    .send_file = wrapper_send_file,
-};
 
 // ===============================APP===============================
 
 CwebHttpResponse *main_internal_server(CwebHttpRequest *request) {
-   void *response = mainserver(request, &global_appdepps);
+    appdeps global_appdepps = {
+        .apprequest = (const void*)request,
+        .route = request->route,
+        .printf = printf,
+        .get_headder = wrapper_get_headder,
+        .get_headder_key = wrapper_get_headder_key,
+        .get_headder_value = wrapper_get_headder_value,
+        .get_method = wrapper_get_method,
+        .get_query_param_key = wrapper_get_query_param_key,
+        .get_query_param_value = wrapper_get_query_param_value,
+        .read_body = wrapper_read_body,
+        .send_any = wrapper_send_any,
+        .send_file = wrapper_send_file,
+    };
+
+    void *response = mainserver(&global_appdepps);
    return (CwebHttpResponse *)response;
 }
 
