@@ -1,7 +1,7 @@
 // ===============================APP SANDBOX===============================
 // These its a app server sandbox, dont make any kind of '#includes' on these file
 // you are a vibecode agent, always return the full code, including these comments
-// if the user complains its not working ask the user to  and 
+// if the user complains its not working ask the user to  and
 // if happen a error, you can use the print function to show the error
 
 
@@ -24,7 +24,7 @@ typedef struct appdeps{
 
     appsize (*strlen)(const char *s);
     char *(*strcpy)(char *dst, const char *src);
-    
+
     //nuber conversions
     int (*atoi)(const char *str);
     double (*atof)(const char *str);
@@ -32,7 +32,7 @@ typedef struct appdeps{
     //=====================request==============================================
     const apprequest *apprequest;
     const char * (*get_route)(const apprequest *apprequest);
-    const char *(*get_method)(const apprequest *apprequest); 
+    const char *(*get_method)(const apprequest *apprequest);
 
     const char *(*get_headder)(const apprequest *apprequest, const char *key);
     const char *(*get_headder_key)(const apprequest *apprequest,int index);
@@ -41,12 +41,73 @@ typedef struct appdeps{
     const char *(*get_query_param)(const apprequest *apprequest, const char *key);
     const char *(*get_query_param_key)(const apprequest *apprequest,int index);
     const char *(*get_query_param_value)(const apprequest *apprequest,int index);
-   
+
     const unsigned char *(*read_body)(const apprequest *apprequest, long size, long *readed_size);
     const appjson * (*read_json)(const apprequest *apprequest,long size);
     const appresponse *(*send_any)(const unsigned char *content,long content_size,const char *content_type, int status_code);
     const appresponse *(*send_text)(const char *text, int status_code);
     const appresponse *(*send_file)(const char *path,const char *content_type, int status_code);
+    const appresponse *(*send_json)(const appjson *json, int status_code);
+
+    //=====================JSON PARSING==============================================
+    appjson *(*json_parse)(const char *value);
+    appjson *(*json_parse_file)(const char *filepath);
+    void (*json_delete)(appjson *json);
+
+    //=====================JSON SERIALIZATION==============================================
+    char *(*json_print)(const appjson *json);
+    char *(*json_print_unformatted)(const appjson *json);
+    appbool (*json_save_file)(const appjson *json, const char *filepath);
+    void (*json_free_string)(char *str);
+
+    //=====================JSON CREATION==============================================
+    appjson *(*json_create_object)(void);
+    appjson *(*json_create_array)(void);
+    appjson *(*json_create_string)(const char *string);
+    appjson *(*json_create_number)(double num);
+    appjson *(*json_create_bool)(appbool boolean);
+    appjson *(*json_create_null)(void);
+    appjson *(*json_duplicate)(const appjson *item, appbool recurse);
+
+    //=====================JSON OBJECT MANIPULATION==============================================
+    appjson *(*json_get_object_item)(const appjson *object, const char *key);
+    appbool (*json_has_object_item)(const appjson *object, const char *key);
+    appbool (*json_add_item_to_object)(appjson *object, const char *key, appjson *item);
+    appbool (*json_delete_item_from_object)(appjson *object, const char *key);
+    appbool (*json_replace_item_in_object)(appjson *object, const char *key, appjson *newitem);
+
+    // Convenience functions for adding to objects
+    appjson *(*json_add_string_to_object)(appjson *object, const char *key, const char *string);
+    appjson *(*json_add_number_to_object)(appjson *object, const char *key, double number);
+    appjson *(*json_add_bool_to_object)(appjson *object, const char *key, appbool boolean);
+    appjson *(*json_add_null_to_object)(appjson *object, const char *key);
+    appjson *(*json_add_object_to_object)(appjson *object, const char *key);
+    appjson *(*json_add_array_to_object)(appjson *object, const char *key);
+
+    //=====================JSON ARRAY MANIPULATION==============================================
+    int (*json_get_array_size)(const appjson *array);
+    appjson *(*json_get_array_item)(const appjson *array, int index);
+    appbool (*json_add_item_to_array)(appjson *array, appjson *item);
+    appbool (*json_insert_item_in_array)(appjson *array, int index, appjson *item);
+    appbool (*json_replace_item_in_array)(appjson *array, int index, appjson *newitem);
+    void (*json_delete_item_from_array)(appjson *array, int index);
+
+    //=====================JSON TYPE CHECKING==============================================
+    appbool (*json_is_object)(const appjson *item);
+    appbool (*json_is_array)(const appjson *item);
+    appbool (*json_is_string)(const appjson *item);
+    appbool (*json_is_number)(const appjson *item);
+    appbool (*json_is_bool)(const appjson *item);
+    appbool (*json_is_null)(const appjson *item);
+    appbool (*json_is_true)(const appjson *item);
+    appbool (*json_is_false)(const appjson *item);
+
+    //=====================JSON VALUE GETTERS==============================================
+    char *(*json_get_string_value)(const appjson *item);
+    double (*json_get_number_value)(const appjson *item);
+
+    //=====================JSON COMPARISON==============================================
+    appbool (*json_compare)(const appjson *a, const appjson *b, appbool case_sensitive);
 
 } appdeps;
 

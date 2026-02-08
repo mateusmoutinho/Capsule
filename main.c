@@ -75,6 +75,190 @@ const void *wrapper_read_json(const void *apprequest, long size){
     cJSON *json = CWebHttpRequest_read_cJSON(request, size);
     return (const void *)json;
 }
+//================================JSON PARSING================================
+void *wrapper_json_parse(const char *value){
+    return (void *)cJSON_Parse(value);
+}
+
+void *wrapper_json_parse_file(const char *filepath){
+    char *content = dtw_load_string_file_content(filepath);
+    if(content == NULL) return NULL;
+    cJSON *json = cJSON_Parse(content);
+    free(content);
+    return (void *)json;
+}
+
+void wrapper_json_delete(void *json){
+    cJSON_Delete((cJSON *)json);
+}
+
+//================================JSON SERIALIZATION================================
+char *wrapper_json_print(const void *json){
+    return cJSON_Print((cJSON *)json);
+}
+
+char *wrapper_json_print_unformatted(const void *json){
+    return cJSON_PrintUnformatted((cJSON *)json);
+}
+
+int wrapper_json_save_file(const void *json, const char *filepath){
+    char *content = cJSON_Print((cJSON *)json);
+    if(content == NULL) return 0;
+    dtw_write_string_file_content(filepath, content);
+    cJSON_free(content);
+    return 1;
+}
+
+void wrapper_json_free_string(char *str){
+    cJSON_free(str);
+}
+
+//================================JSON CREATION================================
+void *wrapper_json_create_object(void){
+    return (void *)cJSON_CreateObject();
+}
+
+void *wrapper_json_create_array(void){
+    return (void *)cJSON_CreateArray();
+}
+
+void *wrapper_json_create_string(const char *string){
+    return (void *)cJSON_CreateString(string);
+}
+
+void *wrapper_json_create_number(double num){
+    return (void *)cJSON_CreateNumber(num);
+}
+
+void *wrapper_json_create_bool(int boolean){
+    return (void *)cJSON_CreateBool(boolean);
+}
+
+void *wrapper_json_create_null(void){
+    return (void *)cJSON_CreateNull();
+}
+
+void *wrapper_json_duplicate(const void *item, int recurse){
+    return (void *)cJSON_Duplicate((cJSON *)item, recurse);
+}
+
+//================================JSON OBJECT MANIPULATION================================
+void *wrapper_json_get_object_item(const void *object, const char *key){
+    return (void *)cJSON_GetObjectItem((cJSON *)object, key);
+}
+
+int wrapper_json_has_object_item(const void *object, const char *key){
+    return cJSON_HasObjectItem((cJSON *)object, key);
+}
+
+int wrapper_json_add_item_to_object(void *object, const char *key, void *item){
+    return cJSON_AddItemToObject((cJSON *)object, key, (cJSON *)item);
+}
+
+int wrapper_json_delete_item_from_object(void *object, const char *key){
+    cJSON_DeleteItemFromObject((cJSON *)object, key);
+    return 1;
+}
+
+int wrapper_json_replace_item_in_object(void *object, const char *key, void *newitem){
+    return cJSON_ReplaceItemInObject((cJSON *)object, key, (cJSON *)newitem);
+}
+
+void *wrapper_json_add_string_to_object(void *object, const char *key, const char *string){
+    return (void *)cJSON_AddStringToObject((cJSON *)object, key, string);
+}
+
+void *wrapper_json_add_number_to_object(void *object, const char *key, double number){
+    return (void *)cJSON_AddNumberToObject((cJSON *)object, key, number);
+}
+
+void *wrapper_json_add_bool_to_object(void *object, const char *key, int boolean){
+    return (void *)cJSON_AddBoolToObject((cJSON *)object, key, boolean);
+}
+
+void *wrapper_json_add_null_to_object(void *object, const char *key){
+    return (void *)cJSON_AddNullToObject((cJSON *)object, key);
+}
+
+void *wrapper_json_add_object_to_object(void *object, const char *key){
+    return (void *)cJSON_AddObjectToObject((cJSON *)object, key);
+}
+
+void *wrapper_json_add_array_to_object(void *object, const char *key){
+    return (void *)cJSON_AddArrayToObject((cJSON *)object, key);
+}
+
+//================================JSON ARRAY MANIPULATION================================
+int wrapper_json_get_array_size(const void *array){
+    return cJSON_GetArraySize((cJSON *)array);
+}
+
+void *wrapper_json_get_array_item(const void *array, int index){
+    return (void *)cJSON_GetArrayItem((cJSON *)array, index);
+}
+
+int wrapper_json_add_item_to_array(void *array, void *item){
+    return cJSON_AddItemToArray((cJSON *)array, (cJSON *)item);
+}
+
+int wrapper_json_insert_item_in_array(void *array, int index, void *item){
+    return cJSON_InsertItemInArray((cJSON *)array, index, (cJSON *)item);
+}
+
+int wrapper_json_replace_item_in_array(void *array, int index, void *newitem){
+    return cJSON_ReplaceItemInArray((cJSON *)array, index, (cJSON *)newitem);
+}
+
+void wrapper_json_delete_item_from_array(void *array, int index){
+    cJSON_DeleteItemFromArray((cJSON *)array, index);
+}
+
+//================================JSON TYPE CHECKING================================
+int wrapper_json_is_object(const void *item){
+    return cJSON_IsObject((cJSON *)item);
+}
+
+int wrapper_json_is_array(const void *item){
+    return cJSON_IsArray((cJSON *)item);
+}
+
+int wrapper_json_is_string(const void *item){
+    return cJSON_IsString((cJSON *)item);
+}
+
+int wrapper_json_is_number(const void *item){
+    return cJSON_IsNumber((cJSON *)item);
+}
+
+int wrapper_json_is_bool(const void *item){
+    return cJSON_IsBool((cJSON *)item);
+}
+
+int wrapper_json_is_null(const void *item){
+    return cJSON_IsNull((cJSON *)item);
+}
+
+int wrapper_json_is_true(const void *item){
+    return cJSON_IsTrue((cJSON *)item);
+}
+
+int wrapper_json_is_false(const void *item){
+    return cJSON_IsFalse((cJSON *)item);
+}
+
+//================================JSON VALUE GETTERS================================
+char *wrapper_json_get_string_value(const void *item){
+    return cJSON_GetStringValue((cJSON *)item);
+}
+
+double wrapper_json_get_number_value(const void *item){
+    return cJSON_GetNumberValue((cJSON *)item);
+}
+
+//================================JSON COMPARISON================================
+int wrapper_json_compare(const void *a, const void *b, int case_sensitive){
+    return cJSON_Compare((cJSON *)a, (cJSON *)b, case_sensitive);
+}
 
 //================================RESPONSE================================
 const void  *wrapper_send_any(const unsigned char *content,long content_size,const char *content_type, int status_code){
@@ -85,6 +269,9 @@ const void *wrapper_send_text(const char *text, int status_code){
 }
 const void *wrapper_send_file(const char *path,const char *content_type, int status_code){
     return (void *)cweb_send_file(path, content_type, status_code);
+}
+const void *wrapper_send_json(const void *json, int status_code){
+    return cweb_send_cJSON((cJSON *)json, status_code);
 }
 
 // ===============================APP===============================
@@ -116,11 +303,71 @@ CwebHttpResponse *main_internal_server(CwebHttpRequest *request) {
     appdeps.get_query_param_key = wrapper_get_query_param_key;
     appdeps.get_query_param_value = wrapper_get_query_param_value;
     appdeps.read_body = wrapper_read_body;
-    
+    appdeps.read_json = wrapper_read_json;
+
     // HTTP response wrapper functions
     appdeps.send_any = wrapper_send_any;
     appdeps.send_text = wrapper_send_text;
     appdeps.send_file = wrapper_send_file;
+    appdeps.send_json = wrapper_send_json;
+
+    // JSON parsing functions
+    appdeps.json_parse = wrapper_json_parse;
+    appdeps.json_parse_file = wrapper_json_parse_file;
+    appdeps.json_delete = wrapper_json_delete;
+
+    // JSON serialization functions
+    appdeps.json_print = wrapper_json_print;
+    appdeps.json_print_unformatted = wrapper_json_print_unformatted;
+    appdeps.json_save_file = wrapper_json_save_file;
+    appdeps.json_free_string = wrapper_json_free_string;
+
+    // JSON creation functions
+    appdeps.json_create_object = wrapper_json_create_object;
+    appdeps.json_create_array = wrapper_json_create_array;
+    appdeps.json_create_string = wrapper_json_create_string;
+    appdeps.json_create_number = wrapper_json_create_number;
+    appdeps.json_create_bool = wrapper_json_create_bool;
+    appdeps.json_create_null = wrapper_json_create_null;
+    appdeps.json_duplicate = wrapper_json_duplicate;
+
+    // JSON object manipulation functions
+    appdeps.json_get_object_item = wrapper_json_get_object_item;
+    appdeps.json_has_object_item = wrapper_json_has_object_item;
+    appdeps.json_add_item_to_object = wrapper_json_add_item_to_object;
+    appdeps.json_delete_item_from_object = wrapper_json_delete_item_from_object;
+    appdeps.json_replace_item_in_object = wrapper_json_replace_item_in_object;
+    appdeps.json_add_string_to_object = wrapper_json_add_string_to_object;
+    appdeps.json_add_number_to_object = wrapper_json_add_number_to_object;
+    appdeps.json_add_bool_to_object = wrapper_json_add_bool_to_object;
+    appdeps.json_add_null_to_object = wrapper_json_add_null_to_object;
+    appdeps.json_add_object_to_object = wrapper_json_add_object_to_object;
+    appdeps.json_add_array_to_object = wrapper_json_add_array_to_object;
+
+    // JSON array manipulation functions
+    appdeps.json_get_array_size = wrapper_json_get_array_size;
+    appdeps.json_get_array_item = wrapper_json_get_array_item;
+    appdeps.json_add_item_to_array = wrapper_json_add_item_to_array;
+    appdeps.json_insert_item_in_array = wrapper_json_insert_item_in_array;
+    appdeps.json_replace_item_in_array = wrapper_json_replace_item_in_array;
+    appdeps.json_delete_item_from_array = wrapper_json_delete_item_from_array;
+
+    // JSON type checking functions
+    appdeps.json_is_object = wrapper_json_is_object;
+    appdeps.json_is_array = wrapper_json_is_array;
+    appdeps.json_is_string = wrapper_json_is_string;
+    appdeps.json_is_number = wrapper_json_is_number;
+    appdeps.json_is_bool = wrapper_json_is_bool;
+    appdeps.json_is_null = wrapper_json_is_null;
+    appdeps.json_is_true = wrapper_json_is_true;
+    appdeps.json_is_false = wrapper_json_is_false;
+
+    // JSON value getters
+    appdeps.json_get_string_value = wrapper_json_get_string_value;
+    appdeps.json_get_number_value = wrapper_json_get_number_value;
+
+    // JSON comparison
+    appdeps.json_compare = wrapper_json_compare;
 
    const void *response = mainserver(&appdeps);
    return (CwebHttpResponse *)response;
