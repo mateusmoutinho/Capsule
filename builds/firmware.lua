@@ -4,8 +4,9 @@ function firmware_build()
     if LAUNGUAGE == "cpp" then
         compiler = "g++"
     end
-
-    os.execute(compiler .. " -shared -o " .. "release/" .. PROJECT_NAME .. ".so" .."release/"..PROJECT_NAME..".c" )
+    local command = compiler .. " -shared -fPIC " .."release/"..PROJECT_NAME..".c" .. " -o " .. "release/" .. PROJECT_NAME .. ".so" 
+    print(command)
+    os.execute(command)
 end
 
 darwin.add_recipe({
