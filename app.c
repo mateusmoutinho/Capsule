@@ -119,19 +119,24 @@ typedef struct appdeps{
     
     
     //======================IO FUNCTIONS ==================================================
-    unsigned char * (*read_any)(const char *path,long *size);
+    unsigned char * (*read_any)(const char *path,long *size,appbool *is_binary);
     char * (*read_string)(const char *path); // needs to bee free
     void (*write_any)(const char *path,unsigned char *content, long size);
     void (*write_string)(const char *path,char *content);
     void (*delete_any)(const char *path);
 
+
+    void (*delete_stringarray)(appstringarray *array); 
+    long (*get_stringarray_size)(appstringarray *array);
+    const char *(*get_stringarray_item)(appstringarray *array, int index);
+
+    
     appstringarray *  (*list_files)(const char *path);
     appstringarray *  (*list_dirs)(const char *path);
     appstringarray *  (*list_any)(const char *path);
     appstringarray *  (*list_files_recursively)(const char *path);
     appstringarray *  (*list_dirs_recursively)(const char *path);
     appstringarray *  (*list_any_recursively)(const char *path);
-    void (*delete_stringarray)(appstringarray *array); 
    
     appbool (*file_exists)(const char *path);
     appbool (*dir_exists)(const char *path);

@@ -273,6 +273,58 @@ const void *wrapper_send_file(const char *path,const char *content_type, int sta
 const void *wrapper_send_json(const void *json, int status_code){
     return cweb_send_cJSON((cJSON *)json, status_code);
 }
+//================================IO FUNCTIONS================================
+
+unsigned char *wrapper_read_any(const char *path, long *size, int *is_binary){
+    return dtw_load_any_content(path, size, (bool *)is_binary);
+}
+char *wrapper_read_string(const char *path){
+    return dtw_load_string_file_content(path);
+}
+void wrapper_write_any(const char *path, const unsigned char *content, long size){
+    dtw_write_any_content(path, (unsigned char *)content, size);
+}
+
+void wrapper_write_string(const char *path, const char *content){
+    dtw_write_string_file_content(path, content);
+}
+void wrapper_delete_any(const char *path){
+    dtw_remove_any(path);
+}
+void wrapper_delete_stringarray(void *array){
+    DtwStringArray_free((DtwStringArray *)array);
+}
+long wrapper_get_stringarray_size(void *array){
+    return ((DtwStringArray *)array)->size;
+}
+const char *wrapper_get_stringarray_item(void *array, int index){
+    return ((DtwStringArray *)array)->strings[index];
+}
+
+void *wrapper_list_files(const char *path){
+    DtwStringArray *files = dtw_list_files(path,false);
+    return (void *)files;
+}
+void *wrapper_list_dirs(const char *path){
+    DtwStringArray *dirs = dtw_list_dirs(path,false);
+    return (void *)dirs;
+}
+void *wrapper_list_all(const char *path){
+    DtwStringArray *all = dtw_list_all(path,false);
+    return (void *)all;
+}
+void *wrapper_list_files_recursively(const char *path){
+    DtwStringArray *files = dtw_list_files_recursively(path,false);
+    return (void *)files;
+}
+void *wrapper_list_dirs_recursively(const char *path){
+    DtwStringArray *dirs = dtw_list_dirs_recursively(path,false);
+    return (void *)dirs;
+}
+void *wrapper_list_all_recursively(const char *path){
+    DtwStringArray *all = dtw_list_all_recursively(path,false);
+    return (void *)all;
+}
 
 // ===============================APP===============================
 void start_app_deps(appdeps *appdeps){
@@ -366,7 +418,25 @@ void start_app_deps(appdeps *appdeps){
 
     // JSON comparison
     appdeps->json_compare = wrapper_json_compare;
+    // IO   
+    appdeps->read_any = wrapper_read_any;
+    appdeps->read_string = wrapper_read_string;
+    appdeps->write_any = wrapper_write_any;
+    appdeps->write_string = wrapper_write_string;
+    appdeps->delete_any = wrapper_delete_any;
+    
+    // String array manipulation functions
+    appdeps->stringarray_delete = wrapper_delete_stringarray;
+    appdeps->stringarray_get_size = wrapper_get_stringarray_size;
+    appdeps->stringarray_get_item = wrapper_get_stringarray_item;
 
+    // List functions
+    appdeps->list_files = wrapper_list_files;
+    appdeps->list_dirs = wrapper_list_dirs;
+    appdeps->list_any = wrapper_list_any;
+    appdeps->list_files_recursively = wrapper_list_files_recursively;
+    appdeps->list_dirs_recursively = wrapper_list_dirs_recursively;
+    appdeps->list_any_recursively = wrapper_list_any_recursively;
 }
 
 CwebHttpResponse *main_internal_server(CwebHttpRequest *request) {
