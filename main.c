@@ -3,6 +3,7 @@
 #include "dependencies/doTheWorldOne.c"
 #include "dependencies/CWebStudioOne.c"
 #include "dependencies/CArgvParseOne.c"
+#include "dependencies/BearHttpsClientOne.c"
 #include "app.c"
 
 
