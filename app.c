@@ -13,8 +13,8 @@ typedef int appbool;
 
 
 //======================APP TYPES==============================================
-typedef void apprequest;
-typedef void appresponse;
+typedef void appserverrequest;
+typedef void appserverresponse;
 typedef void appjson;
 typedef void appstringarray;
 typedef void appargv;
@@ -40,30 +40,30 @@ typedef struct appdeps{
     void *(*calloc)(appsize num, appsize size);
     void *(*realloc)(void *ptr, appsize size);
     //=====================request==============================================
-    const apprequest *apprequest;
-    const char * (*get_route)(const apprequest *apprequest);
-    const char *(*get_method)(const apprequest *apprequest);
+    const appserverrequest *appserverrequest;
+    const char * (*get_server_route)(const appserverrequest *appserverrequest);
+    const char *(*get_server_method)(const appserverrequest *appserverrequest);
 
-    const char *(*get_headder)(const apprequest *apprequest, const char *key);
-    const char *(*get_headder_key)(const apprequest *apprequest,int index);
-    const char *(*get_headder_value)(const apprequest *apprequest,int index);
+    const char *(*get_server_headder)(const appserverrequest *appserverrequest, const char *key);
+    const char *(*get_server_headder_key)(const appserverrequest *appserverrequest,int index);
+    const char *(*get_server_headder_value)(const appserverrequest *appserverrequest,int index);
 
-    const char *(*get_query_param)(const apprequest *apprequest, const char *key);
-    const char *(*get_query_param_key)(const apprequest *apprequest,int index);
-    const char *(*get_query_param_value)(const apprequest *apprequest,int index);
+    const char *(*get_server_query_param)(const appserverrequest *appserverrequest, const char *key);
+    const char *(*get_server_query_param_key)(const appserverrequest *appserverrequest,int index);
+    const char *(*get_server_query_param_value)(const appserverrequest *appserverrequest,int index);
 
-    const unsigned char *(*read_body)(const apprequest *apprequest, long size, long *readed_size);
-    const appjson * (*read_json)(const apprequest *apprequest,long size);
-    const appresponse *(*newappresponse)();
-    void (*setappresponse_headder)(appresponse *appresponse, const char *key, const char *value);
-    void (*setappresponse_content)(appresponse *appresponse, const unsigned char *content, long content_size);
-    void (*setappresponse_status_code)(appresponse *appresponse, int status_code);
+    const unsigned char *(*read_server_body)(const appserverrequest *appserverrequest, long size, long *readed_size);
+    const appjson * (*read_server_json)(const appserverrequest *appserverrequest,long size);
+    const appserverresponse *(*newappserverresponse)();
+    void (*setappserverresponse_headder)(appserverresponse *appserverresponse, const char *key, const char *value);
+    void (*setappserverresponse_content)(appserverresponse *appserverresponse, const unsigned char *content, long content_size);
+    void (*setappserverresponse_status_code)(appserverresponse *appserverresponse, int status_code);
 
 
-    const appresponse *(*send_any)(const unsigned char *content,long content_size,const char *content_type, int status_code);
-    const appresponse *(*send_text)(const char *text,const char *content_type, int status_code);
-    const appresponse *(*send_file)(const char *path,const char *content_type, int status_code);
-    const appresponse *(*send_json)(const appjson *json, int status_code);
+    const appserverresponse *(*send_any)(const unsigned char *content,long content_size,const char *content_type, int status_code);
+    const appserverresponse *(*send_text)(const char *text,const char *content_type, int status_code);
+    const appserverresponse *(*send_file)(const char *path,const char *content_type, int status_code);
+    const appserverresponse *(*send_json)(const appjson *json, int status_code);
 
     //=====================JSON PARSING==============================================
     appjson *(*json_parse)(const char *value);
@@ -170,13 +170,13 @@ typedef struct appstart {
     void *props;
 
     appbool single_process;  
-    const appresponse * (*mainserver)(appdeps *d,void *props);
+    const appserverresponse * (*mainserver)(appdeps *d,void *props);
     void (*free_props)(void *props);
 } appstart;
 
 
 // ===================== MAIN SERVER =====================
-const appresponse * private_mainserver(appdeps *deps,void *props){
+const appserverresponse * private_mainserver(appdeps *deps,void *props){
     char *converted_props = (char *)props;
     return deps->send_text( converted_props,"text/plain",200);
 }

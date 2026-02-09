@@ -10,20 +10,20 @@
 
 // ===============================SERVER WRAPPERS===============================
 
-const char *wrapper_get_route(const void *apprequest){
+const char *wrapper_get_server_route(const void *apprequest){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     return request->route;
 }
-const char *wrapper_get_method(const void *apprequest){
+const char *wrapper_get_server_method(const void *apprequest){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     return request->method;
 }
 //================================HEADDERS================================
-const char *wrapper_get_headder(const void *apprequest, const char *key){
+const char *wrapper_get_server_headder(const void *apprequest, const char *key){
     return CwebHttpRequest_get_header((CwebHttpRequest *)apprequest, key);
 }
 
-const char *wrapper_get_headder_key(const void *apprequest, int index){
+const char *wrapper_get_server_headder_key(const void *apprequest, int index){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     if(index < 0 || index >= request->headers->size){
         return NULL;
@@ -33,7 +33,7 @@ const char *wrapper_get_headder_key(const void *apprequest, int index){
     return keyval->key;
 }
 
-const char *wrapper_get_headder_value(const void *apprequest, int index){
+const char *wrapper_get_server_headder_value(const void *apprequest, int index){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     if(index < 0 || index >= request->headers->size){
         return NULL;
@@ -44,12 +44,12 @@ const char *wrapper_get_headder_value(const void *apprequest, int index){
 }
 
 //================================PARAMS================================
-const char *wrapper_get_query_param(const void *apprequest, const char *key){
+const char *wrapper_get_server_query_param(const void *apprequest, const char *key){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     return CwebHttpRequest_get_param(request, key);
 }
 
-const char *wrapper_get_query_param_key(const void *apprequest, int index){
+const char *wrapper_get_server_query_param_key(const void *apprequest, int index){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     if(index < 0 || index >= request->params->size){
         return NULL;
@@ -59,7 +59,7 @@ const char *wrapper_get_query_param_key(const void *apprequest, int index){
     return keyval->key;
 }
 
-const char *wrapper_get_query_param_value(const void *apprequest, int index){
+const char *wrapper_get_server_query_param_value(const void *apprequest, int index){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     if(index < 0 || index >= request->params->size){
         return NULL;
@@ -69,13 +69,13 @@ const char *wrapper_get_query_param_value(const void *apprequest, int index){
     return keyval->value;
 }
 
-const unsigned char *wrapper_read_body(const void *apprequest, long size, long *readed_size){
+const unsigned char *wrapper_read_server_body(const void *apprequest, long size, long *readed_size){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     unsigned char *response_body = CwebHttpRequest_read_content(request, size);
     *readed_size = request->content_length;
     return (const unsigned char *)response_body;
 }
-const void *wrapper_read_json(const void *apprequest, long size){
+const void *wrapper_read_server_json(const void *apprequest, long size){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     cJSON *json = CWebHttpRequest_read_cJSON(request, size);
     return (const void *)json;
@@ -267,20 +267,20 @@ int wrapper_json_compare(const void *a, const void *b, int case_sensitive){
 
 //================================RESPONSE================================
 
-const void *wrapper_newappresponse(){
+const void *wrapper_newappserverresponse(){
     return (void*)newCwebHttpResponse();
 }
 
-void wrapper_setappresponse_headder(appresponse *appresponse, const char *key, const char *value){
-    CwebHttpResponse_add_header((CwebHttpResponse *)appresponse, key, value);
+void wrapper_setappserverresponse_headder(void  *appserverresponse, const char *key, const char *value){
+    CwebHttpResponse_add_header((CwebHttpResponse *)appserverresponse, key, value);
 }
 
-void wrapper_setappresponse_content(appresponse *appresponse, const unsigned char *content, long content_size){
-    CwebHttpResponse_set_content((CwebHttpResponse *)appresponse, (unsigned char *)content, content_size);
+void wrapper_setappserverresponse_content(void *appserverresponse, const unsigned char *content, long content_size){
+    CwebHttpResponse_set_content((CwebHttpResponse *)appserverresponse, (unsigned char *)content, content_size);
 }
 
-void wrapper_setappresponse_status_code(appresponse *appresponse, int status_code){
-    ((CwebHttpResponse *)appresponse)->status_code = status_code;
+void wrapper_setappserverresponse_status_code(void*appserverresponse, int status_code){
+    ((CwebHttpResponse *)appserverresponse)->status_code = status_code;
 }
 
 
@@ -398,22 +398,22 @@ appdeps global_appdeps = {
     .realloc = realloc,
     
     // HTTP request wrapper functions
-    .get_route = wrapper_get_route,
-    .get_headder = wrapper_get_headder,
-    .get_headder_key = wrapper_get_headder_key,
-    .get_headder_value = wrapper_get_headder_value,
-    .get_method = wrapper_get_method,
-    .get_query_param = wrapper_get_query_param,
-    .get_query_param_key = wrapper_get_query_param_key,
-    .get_query_param_value = wrapper_get_query_param_value,
-    .read_body = wrapper_read_body,
-    .read_json = wrapper_read_json,
+    .get_server_route = wrapper_get_server_route,
+    .get_server_headder = wrapper_get_server_headder,
+    .get_server_headder_key = wrapper_get_server_headder_key,
+    .get_server_headder_value = wrapper_get_server_headder_value,
+    .get_server_method = wrapper_get_server_method,
+    .get_server_query_param = wrapper_get_server_query_param,
+    .get_server_query_param_key = wrapper_get_server_query_param_key,
+    .get_server_query_param_value = wrapper_get_server_query_param_value,
+    .read_server_body = wrapper_read_server_body,
+    .read_server_json = wrapper_read_server_json,
 
     // HTTP response wrapper functions
-    .newappresponse = wrapper_newappresponse,
-    .setappresponse_headder = wrapper_setappresponse_headder,
-    .setappresponse_content = wrapper_setappresponse_content,
-    .setappresponse_status_code = wrapper_setappresponse_status_code,
+    .newappserverresponse = wrapper_newappserverresponse,
+    .setappserverresponse_headder = wrapper_setappserverresponse_headder,
+    .setappserverresponse_content = wrapper_setappserverresponse_content,
+    .setappserverresponse_status_code = wrapper_setappserverresponse_status_code,
     .send_any = wrapper_send_any,
     .send_text = wrapper_send_text,
     .send_file = wrapper_send_file,
@@ -508,13 +508,13 @@ appdeps global_appdeps = {
     .has_arg_flag = wrapper_has_arg_flag
 };
 CwebHttpResponse *main_internal_server(CwebHttpRequest *request) {
-    global_appdeps.apprequest = (const void*)request;
+    global_appdeps.appserverrequest = (const void*)request;
     const void *response = global_start_config.mainserver(&global_appdeps,global_start_config.props);
     return (CwebHttpResponse *)response;
 }
 
 CwebHttpResponse *main_internal_server_firmware(CwebHttpRequest *request,int argc,char *argv[]) {
-    global_appdeps.apprequest = (const void*)request;
+    global_appdeps.appserverrequest = (const void*)request;
     global_argv = newCArgvParse(argc,argv);
     global_appdeps.argv = &global_argv;
     global_start_config = public_appstart(&global_appdeps);
