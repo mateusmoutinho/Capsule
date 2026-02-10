@@ -4,13 +4,11 @@ release/
 src/
 src/fdeclare.all.h
 libs
-assets.c
 .cache
 quickbuild.sh
 app
 a.exe
 start_firmware.sh
 debug.so
-assets.h
 dependencies
 a.out
