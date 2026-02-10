@@ -19,7 +19,7 @@ local function write_bytes(assets_stream, file_stream)
     }
 end
 
-local function embed_assets()
+ function embed_assets()
 
     -- Write assets.h (struct definition and extern declaration)
     local header = io.open("assets.h", "w")

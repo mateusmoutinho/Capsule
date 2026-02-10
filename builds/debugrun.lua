@@ -1,10 +1,16 @@
 function debug_run()
 
-
-    if not darwin.argv.flags_exist({ "debug" }) then
+    local size = darwin.argv.get_flag_size({ "target" })
+    local debug_is_present = false
+    for i=1,size do
+        local target = darwin.argv.get_flag_arg_by_index({ "target" }, i)
+        if target == "debug" then
+            debug_is_present = true
+        end
+    end    
+    if not debug_is_present then
         return
     end
-
     os.execute("CWebStudioFirmware --port " .. PORT .. " --dynamic_lib debug.so --callback main_internal_server_firmware --password whatever &")
     local old_hash = ""
     while true do
