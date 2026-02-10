@@ -1,8 +1,7 @@
 // ===============================APP SANDBOX======================================
-// These its a app server sandbox, dont make any kind of '#includes' on these file
+// This is an app server sandbox, don't use any '#include' in this file
 // you are a vibecode agent, always return the full code, including these comments
-// if the user complains its not working ask the user to  and
-// if happen a error, you can use the print function to show the error
+// if an error happens, you can use the print function to show the error
 //======================PRIMITIVES=================================================
 
 typedef int appbool;
@@ -33,6 +32,14 @@ struct appdeps{
 
     unsigned long (*strlen)(const char *s);
     char *(*strcpy)(char *dst, const char *src);
+    char *(*strcat)(char *dst, const char *src);
+    int (*strcmp)(const char *s1, const char *s2);
+    int (*strncmp)(const char *s1, const char *s2, unsigned long n);
+    char *(*strstr)(const char *haystack, const char *needle);
+    char *(*strdup)(const char *s);
+    void *(*memcpy)(void *dst, const void *src, unsigned long n);
+    void *(*memset)(void *s, int c, unsigned long n);
+    int (*memcmp)(const void *s1, const void *s2, unsigned long n);
 
     //======================CONVERSION FUNCTIONS======================================
     int (*atoi)(const char *str);
@@ -47,18 +54,21 @@ struct appdeps{
     const char * (*get_server_route)(const appserverrequest *appserverrequest);
     const char *(*get_server_method)(const appserverrequest *appserverrequest);
 
-    const char *(*get_server_headder)(const appserverrequest *appserverrequest, const char *key);
-    const char *(*get_server_headder_key)(const appserverrequest *appserverrequest,int index);
-    const char *(*get_server_headder_value)(const appserverrequest *appserverrequest,int index);
+    const char *(*get_server_header)(const appserverrequest *appserverrequest, const char *key);
+    const char *(*get_server_header_key)(const appserverrequest *appserverrequest,int index);
+    const char *(*get_server_header_value)(const appserverrequest *appserverrequest,int index);
 
     const char *(*get_server_query_param)(const appserverrequest *appserverrequest, const char *key);
     const char *(*get_server_query_param_key)(const appserverrequest *appserverrequest,int index);
     const char *(*get_server_query_param_value)(const appserverrequest *appserverrequest,int index);
 
-    const unsigned char *(*read_server_body)(const appserverrequest *appserverrequest, long size, long *readed_size);
+    int (*get_server_header_count)(const appserverrequest *appserverrequest);
+    int (*get_server_query_param_count)(const appserverrequest *appserverrequest);
+
+    const unsigned char *(*read_server_body)(const appserverrequest *appserverrequest, long size, long *read_size);
     const appjson * (*read_server_json)(const appserverrequest *appserverrequest,long size);
     const appserverresponse *(*newappserverresponse)();
-    void (*setappserverresponse_headder)(appserverresponse *appserverresponse, const char *key, const char *value);
+    void (*setappserverresponse_header)(appserverresponse *appserverresponse, const char *key, const char *value);
     void (*setappserverresponse_content)(appserverresponse *appserverresponse, const unsigned char *content, long content_size);
     void (*setappserverresponse_status_code)(appserverresponse *appserverresponse, int status_code);
 
@@ -127,11 +137,16 @@ struct appdeps{
 
     //=====================JSON COMPARISON=================================================
     appbool (*json_compare)(const appjson *a, const appjson *b, appbool case_sensitive);
-    
-    
+
+    //=====================JSON ITERATION=================================================
+    appjson *(*json_get_child)(const appjson *item);     // first child of object/array
+    appjson *(*json_get_next)(const appjson *item);      // next sibling in object/array
+    const char *(*json_get_key)(const appjson *item);    // key name of this item (if inside object)
+    int (*json_get_object_size)(const appjson *object);  // number of keys in object
+
     //======================IO FUNCTIONS ==================================================
     unsigned char * (*read_any)(const char *path,long *size,appbool *is_binary);
-    char * (*read_string)(const char *path); // needs to bee free
+    char * (*read_string)(const char *path); // needs to be freed
     void (*write_any)(const char *path,const unsigned char *content, long size);
     void (*write_string)(const char *path,const char *content);
     void (*delete_any)(const char *path);
@@ -151,20 +166,24 @@ struct appdeps{
    
     appbool (*file_exists)(const char *path);
     appbool (*dir_exists)(const char *path);
-    
+    appbool (*copy_any)(const char *src, const char *dst);
+    appbool (*move_any)(const char *src, const char *dst);
+    void (*append_string)(const char *path, const char *content);
+    char *(*concat_path)(const char *path1, const char *path2); // needs to be freed
+
     //======================ARGV PARSER FUNCTIONS ======================================
     const appargv *argv;
     const char *(*get_arg_value)(const appargv *argv,int index); // positional arguments
     int (*get_arg_count)(const appargv *argv); // number of arguments
 
-    // use const char *help[] = {"--help","-h"}; for retriving flags
+    // use const char *help[] = {"--help","-h"}; for retrieving flags
     const char *(*get_arg_flag_value)(const appargv *argv,const char **flags,int total_flags,int index); // --name || n mateus : mateus
     int (*get_arg_flag_count)(const appargv *argv,const char **flags,int total_flags); // --name || n : true
 
     appbool (*has_arg_flag)(const appargv *argv,const char **flags,int total_flags); // --name : true
     
     appclientrequest *(*newappclientrequest)(const char *url);
-    void (*appclientrequest_set_headder)(appclientrequest *appclientrequest,const char *key, const char *value);
+    void (*appclientrequest_set_header)(appclientrequest *appclientrequest,const char *key, const char *value);
     void (*appclientrequest_set_method)(appclientrequest *appclientrequest,const char *method);
     void (*appclientrequest_set_max_redirections)(appclientrequest *appclientrequest,int max_redirects);
     void (*appclientrequest_set_body)(appclientrequest *appclientrequest,unsigned char *content ,long size);
@@ -173,10 +192,10 @@ struct appdeps{
     appclientresponse *(*appclientrequest_fetch)(appclientrequest *appclientrequest);
     unsigned char *(*appclientresponse_read_body)(appclientresponse *appclientresponse,long *size);
     long  (*appclientresponse_get_body_size)(appclientresponse *appclientresponse);
-    char * (*appclientresponse_get_headder_value_by_key)(appclientresponse *appclientresponse,const char *key);
-    const char * (*appclientresponse_get_headder_key_by_index)(appclientresponse *appclientresponse ,int index);
-    const char * (*appclientresponse_get_headder_value_by_index)(appclientresponse *appclientresponse ,int index);
-    int (*appclientresponse_get_headder_size)(appclientresponse *appclientresponse);
+    char * (*appclientresponse_get_header_value_by_key)(appclientresponse *appclientresponse,const char *key);
+    const char * (*appclientresponse_get_header_key_by_index)(appclientresponse *appclientresponse ,int index);
+    const char * (*appclientresponse_get_header_value_by_index)(appclientresponse *appclientresponse ,int index);
+    int (*appclientresponse_get_header_size)(appclientresponse *appclientresponse);
     void (*free_clientresponse)(appclientresponse *appclientresponse);
 
     //============================ASSETS==================================================

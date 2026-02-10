@@ -42,6 +42,22 @@ void *wrapper_realloc(void *ptr, unsigned long size){
     return realloc(ptr, (size_t)size);
 }
 
+char *wrapper_strdup(const char *s){
+    return strdup(s);
+}
+
+void *wrapper_memcpy(void *dst, const void *src, unsigned long n){
+    return memcpy(dst, src, (size_t)n);
+}
+
+void *wrapper_memset(void *s, int c, unsigned long n){
+    return memset(s, c, (size_t)n);
+}
+
+int wrapper_memcmp(const void *s1, const void *s2, unsigned long n){
+    return memcmp(s1, s2, (size_t)n);
+}
+
 // ===============================SERVER WRAPPERS===============================
 
 const char *wrapper_get_server_route(const void *apprequest){
@@ -52,28 +68,28 @@ const char *wrapper_get_server_method(const void *apprequest){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     return request->method;
 }
-//================================HEADDERS================================
-const char *wrapper_get_server_headder(const void *apprequest, const char *key){
+//================================HEADERS================================
+const char *wrapper_get_server_header(const void *apprequest, const char *key){
     return CwebHttpRequest_get_header((CwebHttpRequest *)apprequest, key);
 }
 
-const char *wrapper_get_server_headder_key(const void *apprequest, int index){
+const char *wrapper_get_server_header_key(const void *apprequest, int index){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     if(index < 0 || index >= request->headers->size){
         return NULL;
     }
-    CwebDict *headders = request->headers;
-    CwebKeyVal *keyval = headders->keys_vals[index];
+    CwebDict *headers = request->headers;
+    CwebKeyVal *keyval = headers->keys_vals[index];
     return keyval->key;
 }
 
-const char *wrapper_get_server_headder_value(const void *apprequest, int index){
+const char *wrapper_get_server_header_value(const void *apprequest, int index){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     if(index < 0 || index >= request->headers->size){
         return NULL;
     }
-    CwebDict *headders = request->headers;
-    CwebKeyVal *keyval = headders->keys_vals[index];
+    CwebDict *headers = request->headers;
+    CwebKeyVal *keyval = headers->keys_vals[index];
     return keyval->value;
 }
 
@@ -103,10 +119,20 @@ const char *wrapper_get_server_query_param_value(const void *apprequest, int ind
     return keyval->value;
 }
 
-const unsigned char *wrapper_read_server_body(const void *apprequest, long size, long *readed_size){
+int wrapper_get_server_header_count(const void *apprequest){
+    CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
+    return request->headers->size;
+}
+
+int wrapper_get_server_query_param_count(const void *apprequest){
+    CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
+    return request->params->size;
+}
+
+const unsigned char *wrapper_read_server_body(const void *apprequest, long size, long *read_size){
     CwebHttpRequest *request = (CwebHttpRequest *)apprequest;
     unsigned char *response_body = CwebHttpRequest_read_content(request, size);
-    *readed_size = request->content_length;
+    *read_size = request->content_length;
     return (const unsigned char *)response_body;
 }
 const void *wrapper_read_server_json(const void *apprequest, long size){
@@ -299,13 +325,36 @@ int wrapper_json_compare(const void *a, const void *b, int case_sensitive){
     return cJSON_Compare((cJSON *)a, (cJSON *)b, case_sensitive);
 }
 
+//================================JSON ITERATION================================
+void *wrapper_json_get_child(const void *item){
+    return (void *)((cJSON *)item)->child;
+}
+
+void *wrapper_json_get_next(const void *item){
+    return (void *)((cJSON *)item)->next;
+}
+
+const char *wrapper_json_get_key(const void *item){
+    return ((cJSON *)item)->string;
+}
+
+int wrapper_json_get_object_size(const void *object){
+    int count = 0;
+    cJSON *child = ((cJSON *)object)->child;
+    while(child){
+        count++;
+        child = child->next;
+    }
+    return count;
+}
+
 //================================RESPONSE================================
 
 const void *wrapper_newappserverresponse(){
     return (void*)newCwebHttpResponse();
 }
 
-void wrapper_setappserverresponse_headder(void  *appserverresponse, const char *key, const char *value){
+void wrapper_setappserverresponse_header(void  *appserverresponse, const char *key, const char *value){
     CwebHttpResponse_add_header((CwebHttpResponse *)appserverresponse, key, value);
 }
 
@@ -357,6 +406,34 @@ int wrapper_file_exists(const char *path){
 }
 int wrapper_dir_exists(const char *path){
     return dtw_entity_type(path) == DTW_FOLDER_TYPE;
+}
+
+int wrapper_copy_any(const char *src, const char *dst){
+    return dtw_copy_any(src, dst, false);
+}
+
+int wrapper_move_any(const char *src, const char *dst){
+    return dtw_move_any(src, dst, false);
+}
+
+void wrapper_append_string(const char *path, const char *content){
+    char *existing = dtw_load_string_file_content(path);
+    if(existing){
+        long existing_len = strlen(existing);
+        long content_len = strlen(content);
+        char *combined = (char *)malloc(existing_len + content_len + 1);
+        memcpy(combined, existing, existing_len);
+        memcpy(combined + existing_len, content, content_len + 1);
+        dtw_write_string_file_content(path, combined);
+        free(existing);
+        free(combined);
+    } else {
+        dtw_write_string_file_content(path, content);
+    }
+}
+
+char *wrapper_concat_path(const char *path1, const char *path2){
+    return dtw_concat_path(path1, path2);
 }
 
 void wrapper_delete_stringarray(void *array){
@@ -449,7 +526,7 @@ int wrapper_httpclient_response_get_header_size(void *response){
     BearHttpsResponse *resp = (BearHttpsResponse *)response;
     return resp->headers->size;
 }
-void wrapper_httpclient_set_headder(void *client, const char *key, const char *value){
+void wrapper_httpclient_set_header(void *client, const char *key, const char *value){
     BearHttpsRequest *request = (BearHttpsRequest *)client;
     BearHttpsRequest_add_header(request, key, value);
 }
@@ -462,15 +539,15 @@ void wrapper_httpclient_free(void *client){
     BearHttpsRequest_free(request);
 }
 
-char *wrapper_httpclient_response_get_headder_value_by_key(void *response, const char *key){
+char *wrapper_httpclient_response_get_header_value_by_key(void *response, const char *key){
     BearHttpsResponse *resp = (BearHttpsResponse *)response;
     return (char *)BearHttpsResponse_get_header_value_by_key(resp, key);
 }
-const char *wrapper_httpclient_response_get_headder_key_by_index(void *response, int index){
+const char *wrapper_httpclient_response_get_header_key_by_index(void *response, int index){
     BearHttpsResponse *resp = (BearHttpsResponse *)response;
     return BearHttpsResponse_get_header_key_by_index(resp, index);
 }
-const char *wrapper_httpclient_response_get_headder_value_by_index(void *response, int index){
+const char *wrapper_httpclient_response_get_header_value_by_index(void *response, int index){
     BearHttpsResponse *resp = (BearHttpsResponse *)response;
     return BearHttpsResponse_get_header_value_by_index(resp, index);
 }
@@ -517,6 +594,14 @@ appdeps global_appdeps = {
     .snprintf = wrapper_snprintf,
     .strlen = wrapper_strlen,
     .strcpy = strcpy,
+    .strcat = strcat,
+    .strcmp = strcmp,
+    .strncmp = strncmp,
+    .strstr = strstr,
+    .strdup = wrapper_strdup,
+    .memcpy = wrapper_memcpy,
+    .memset = wrapper_memset,
+    .memcmp = wrapper_memcmp,
     .atoi = atoi,
     .atof = atof,
     .free = free,
@@ -526,19 +611,21 @@ appdeps global_appdeps = {
     
     // HTTP request wrapper functions
     .get_server_route = wrapper_get_server_route,
-    .get_server_headder = wrapper_get_server_headder,
-    .get_server_headder_key = wrapper_get_server_headder_key,
-    .get_server_headder_value = wrapper_get_server_headder_value,
+    .get_server_header = wrapper_get_server_header,
+    .get_server_header_key = wrapper_get_server_header_key,
+    .get_server_header_value = wrapper_get_server_header_value,
     .get_server_method = wrapper_get_server_method,
     .get_server_query_param = wrapper_get_server_query_param,
     .get_server_query_param_key = wrapper_get_server_query_param_key,
     .get_server_query_param_value = wrapper_get_server_query_param_value,
+    .get_server_header_count = wrapper_get_server_header_count,
+    .get_server_query_param_count = wrapper_get_server_query_param_count,
     .read_server_body = wrapper_read_server_body,
     .read_server_json = wrapper_read_server_json,
 
     // HTTP response wrapper functions
     .newappserverresponse = wrapper_newappserverresponse,
-    .setappserverresponse_headder = wrapper_setappserverresponse_headder,
+    .setappserverresponse_header = wrapper_setappserverresponse_header,
     .setappserverresponse_content = wrapper_setappserverresponse_content,
     .setappserverresponse_status_code = wrapper_setappserverresponse_status_code,
     .send_any = wrapper_send_any,
@@ -603,10 +690,20 @@ appdeps global_appdeps = {
 
     // JSON comparison
     .json_compare = wrapper_json_compare,
-    
+
+    // JSON iteration
+    .json_get_child = wrapper_json_get_child,
+    .json_get_next = wrapper_json_get_next,
+    .json_get_key = wrapper_json_get_key,
+    .json_get_object_size = wrapper_json_get_object_size,
+
     // IO functions
     .file_exists = wrapper_file_exists,
     .dir_exists = wrapper_dir_exists,
+    .copy_any = wrapper_copy_any,
+    .move_any = wrapper_move_any,
+    .append_string = wrapper_append_string,
+    .concat_path = wrapper_concat_path,
     .read_any = wrapper_read_any,
     .read_string = wrapper_read_string,
     .write_any = wrapper_write_any,
@@ -636,7 +733,7 @@ appdeps global_appdeps = {
 
     // HTTP client functions
     .newappclientrequest = wrapper_newhttpclient,
-    .appclientrequest_set_headder = wrapper_httpclient_set_headder,
+    .appclientrequest_set_header = wrapper_httpclient_set_header,
     .appclientrequest_set_method = wrapper_httpclient_set_method,
     .appclientrequest_set_max_redirections = wrapper_httpclient_set_max_redirections,
     .appclientrequest_set_body = wrapper_httpclient_set_body,
@@ -644,10 +741,10 @@ appdeps global_appdeps = {
     .appclientrequest_fetch = wrapper_httpclient_fetch,
     .appclientresponse_read_body = wrapper_httpclient_response_read_body,
     .appclientresponse_get_body_size = wrapper_httpclient_response_get_body_size,
-    .appclientresponse_get_headder_value_by_key = wrapper_httpclient_response_get_headder_value_by_key,
-    .appclientresponse_get_headder_key_by_index = wrapper_httpclient_response_get_headder_key_by_index,
-    .appclientresponse_get_headder_value_by_index = wrapper_httpclient_response_get_headder_value_by_index,
-    .appclientresponse_get_headder_size = wrapper_httpclient_response_get_header_size,
+    .appclientresponse_get_header_value_by_key = wrapper_httpclient_response_get_header_value_by_key,
+    .appclientresponse_get_header_key_by_index = wrapper_httpclient_response_get_header_key_by_index,
+    .appclientresponse_get_header_value_by_index = wrapper_httpclient_response_get_header_value_by_index,
+    .appclientresponse_get_header_size = wrapper_httpclient_response_get_header_size,
     .free_clientresponse = wrapper_httpclient_response_free,
     .get_asset_content = wrapper_get_asset_content,
     .list_assets = wrapper_list_assets,
