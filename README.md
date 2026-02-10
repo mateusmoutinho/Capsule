@@ -34,6 +34,9 @@ now you can chose from the followin building ways:
 ### Simple gcc compilation
 these template its compilation ready, you can compile the application using gcc with the following command:
 
+requirements:
+- gcc must be installed in your system.
+
 ```bash
 gcc main.c -o app
 ```
@@ -42,15 +45,42 @@ then you can run the application with:
 ./app
 ```
 ### Amalgamation
-you can create a single `.c`containing all the code of the application, including the cortex code. 
+you can create a single `.c`containing all the code of the application, including the cortex code with darwin. 
+requirements:
+- Darwin must be installed in your system.
 
+~~~bash
+ darwin run_blueprint --target amalgamation
+~~~
+this will create a file [release/Cortex.c](release/Cortex.c) with all the code of the application, then you can compile it with:
+```bash
+gcc release/Cortex.c -o app
+```
+and run it with:
+```bash
+./app
+```
+### Static Binary
+you can create a static binary for your application using Darwin with the following command:
+```bash
+darwin run_blueprint --target static_linux --provider docker
+```
 
+### .Deb or .rpm package
+you can create a .deb or .rpm package for your application using Darwin with the following command:
+```bash
+darwin run_blueprint --target deb --provider docker
+```
+or
+```bash
+darwin run_blueprint --target rpm --provider docker
+```
 
 
 ### Build Requirements
 these parts, describe how to install the required dependencies to build the application.
 
-### gcc or clang
+## gcc or clang
 to install gcc or clang, you can follow the instructions in their official websites:
 - [GCC Installation Guide](https://gcc.gnu.org/install/)
 - [Clang Installation Guide](https://clang.llvm.org/get_started.html)
