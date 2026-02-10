@@ -60,10 +60,15 @@ and run it with:
 ```bash
 ./app
 ```
-### Static Binary
+### Static Linux Binary
 you can create a static binary for your application using Darwin with the following command:
 ```bash
 darwin run_blueprint --target static_linux --provider docker
+```
+### Windows Executable
+you can create a windows executable for your application using Darwin with the following command:
+```bash
+darwin run_blueprint --target windows --provider docker
 ```
 
 ### .Deb or .rpm package
