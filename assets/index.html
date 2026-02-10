@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortex</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+@keyframes glitch {
+  0% { text-shadow: 2px 0 #ff00de, -2px 0 #00ffff; }
+  25% { text-shadow: -2px -1px #ff00de, 2px 1px #00ffff; }
+  50% { text-shadow: 1px 2px #ff00de, -1px -2px #00ffff; }
+  75% { text-shadow: -1px 1px #ff00de, 1px -1px #00ffff; }
+  100% { text-shadow: 2px 0 #ff00de, -2px 0 #00ffff; }
+}
+@keyframes scanline {
+  0% { top: -100%; }
+  100% { top: 100%; }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+body {
+  font-family: 'Courier New', monospace;
+  background: #0a0a0f;
+  color: #e0e0e0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.15) 0px,
+    rgba(0,0,0,0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+.scanline {
+  position: fixed;
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.03);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 998;
+}
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: center;
+}
+.logo-wrap {
+  animation: fadeInUp 1s ease-out, float 4s ease-in-out infinite;
+  margin-bottom: 40px;
+}
+.logo-wrap img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 16px;
+  border: 2px solid rgba(255,0,222,0.3);
+  box-shadow: 0 0 30px rgba(255,0,222,0.2), 0 0 60px rgba(0,255,255,0.1);
+  transition: all 0.3s ease;
+}
+.logo-wrap img:hover {
+  box-shadow: 0 0 50px rgba(255,0,222,0.4), 0 0 100px rgba(0,255,255,0.2);
+  border-color: rgba(0,255,255,0.5);
+}
+h1 {
+  font-size: 2.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  animation: glitch 3s infinite, fadeInUp 1s ease-out 0.2s both;
+  text-align: center;
+  margin-bottom: 10px;
+  background: linear-gradient(90deg, #ff00de, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle {
+  font-size: 1em;
+  color: #888;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  animation: fadeInUp 1s ease-out 0.4s both;
+  margin-bottom: 50px;
+}
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 30px;
+  width: 100%;
+  animation: fadeInUp 1s ease-out 0.6s both;
+  backdrop-filter: blur(10px);
+  margin-bottom: 20px;
+}
+.card h2 {
+  color: #ff00de;
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+}
+.card p {
+  color: #aaa;
+  line-height: 1.8;
+  font-size: 0.9em;
+}
+.card code {
+  background: rgba(255,0,222,0.1);
+  color: #00ffff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeInUp 1s ease-out 0.8s both;
+  margin-top: 30px;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 10px rgba(0,255,136,0.5);
+}
+.status span {
+  color: #666;
+  font-size: 0.8em;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+footer {
+  margin-top: 50px;
+  color: #333;
+  font-size: 0.7em;
+  letter-spacing: 3px;
+  animation: fadeInUp 1s ease-out 1s both;
+}
+</style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="container">
+  <div class="logo-wrap">
+    <img src="/assets/logo.jpg" alt="Cortex">
+  </div>
+  <h1>Cortex</h1>
+  <p class="subtitle">core dumped, beautifully</p>
+  <div class="card">
+    <h2>&gt; ABOUT</h2>
+    <p>Welcome to the edge of undefined behavior.
+    We craft artisanal segmentation faults, handpicked null pointer dereferences,
+    and bespoke buffer overflows &mdash; all served fresh from bare-metal C.</p>
+  </div>
+  <div class="card">
+    <h2>&gt; STACK</h2>
+    <p>Built with <code>gcc</code>, powered by <code>CWebStudio</code>,
+    and held together by sheer willpower.
+    No frameworks. No safety nets. Just raw pointers and vibes.</p>
+  </div>
+  <div class="status">
+    <div class="status-dot"></div>
+    <span>All systems nominal &mdash; for now</span>
+  </div>
+  <footer>// undefined behavior is a feature, not a bug</footer>
+</div>
+</body>
+</html>

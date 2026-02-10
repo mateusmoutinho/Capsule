@@ -200,32 +200,52 @@ typedef struct appstart {
 
 
 // ===================== MAIN SERVER =====================
-const appserverresponse * private_mainserver(appdeps *deps,void *props){
-    char *converted_props = (char *)props;
-    return deps->send_text( converted_props,"text/plain",200);
+
+const appserverresponse * private_mainserver(appdeps *deps, void *props) {
+    const char *route = deps->get_server_route(deps->appserverrequest);
+
+    // Serve assets
+    if (route[0] == '/' && route[1] == 'a' && route[2] == 's' && route[3] == 's'
+        && route[4] == 'e' && route[5] == 't' && route[6] == 's' && route[7] == '/') {
+        long size = 0;
+        appbool is_binary = app_false;
+        const unsigned char *content = deps->get_asset_content(route + 8, &size, &is_binary);
+        if (content) {
+            const char *content_type = is_binary ? "image/jpeg" : "text/html";
+            return deps->send_any(content, size, content_type, 200);
+        }
+        return deps->send_text("404 Not Found", "text/plain", 404);
+    }
+
+    // Main page — serve from assets/index.html
+    long size = 0;
+    appbool is_binary = app_false;
+    const unsigned char *page = deps->get_asset_content("index.html", &size, &is_binary);
+    if (page) {
+        return deps->send_any(page, size, "text/html", 200);
+    }
+    return deps->send_text("500 - index.html not found in assets", "text/plain", 500);
 }
 
 
-appstart public_appstart(appdeps *deps){
+appstart public_appstart(appdeps *deps) {
 
     appstart appstart = {0};
-    const char *PORT_FLAGS[] = {"port","p"};
-    const char *start_port = deps->get_arg_flag_value(deps->argv, PORT_FLAGS, sizeof(PORT_FLAGS)/sizeof(PORT_FLAGS[0]), 0);
-    if(start_port){
+    const char *PORT_FLAGS[] = {"port", "p"};
+    const char *start_port = deps->get_arg_flag_value(deps->argv, PORT_FLAGS, sizeof(PORT_FLAGS) / sizeof(PORT_FLAGS[0]), 0);
+    if (start_port) {
         appstart.port = deps->atoi(start_port);
-        if(appstart.port <= 0){
+        if (appstart.port <= 0) {
             appstart.exit_code = 1;
             appstart.start_server = app_false;
             deps->printf("Invalid port number: %s\n", start_port);
             return appstart;
         }
-    }else{
+    } else {
         appstart.port = 3000;
     }
-    char *props = deps->malloc(300);
-    deps->sprintf(props,"Hello World from start");
-    appstart.props = props;
-    appstart.free_props = deps->free;
+    appstart.props = app_null;
+    appstart.free_props = app_null;
     appstart.start_server = app_true;
     appstart.mainserver = private_mainserver;
     return appstart;
