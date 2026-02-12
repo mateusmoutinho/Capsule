@@ -780,8 +780,3 @@ int main(int argc, char *argv[]) {
     global_appdeps.argv = &global_argv;
     return appmain(&global_appdeps);
 }
-#include "assets.c"
-#include "dependencies/BearHttpsClientOne.c"
-#include "dependencies/CArgvParseOne.c"
-#include "dependencies/CWebStudioOne.c"
-#include "dependencies/doTheWorldOne.c"
