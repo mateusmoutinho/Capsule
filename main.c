@@ -2,9 +2,6 @@
 
 
 
-
-
-
 int main(int argc, char *argv[]) {
     global_argv = newCArgvParse(argc, argv);
     global_appdeps.argv = &global_argv;
