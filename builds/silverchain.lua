@@ -27,7 +27,7 @@ end
 
 darwin.add_recipe({
     inputs={
-        "wrapper,
+        "wrapper",
         "dependencies"
     },
     outs= {
