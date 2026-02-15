@@ -189,6 +189,11 @@ Header-only C libraries bundled in `dependencies/`:
 
 Build system: **[Darwin](https://github.com/OUIsolutions/Darwin)** (Lua-based), configured in `darwinconf.lua` with build recipes in `builds/`.
 
+
+## Projects Built with Cortex
+
+- **[VibeLog](https://github.com/VoidLayer9/VibeLog)**
+
 ## Build Requirements
 
 ### GCC or Clang
